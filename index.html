@@ -1,11 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keyvi</title>
-</head>
-<body>
-    <h1>Hola Josue</h1>
-</body>
+<html>
+  <head>
+    <title>Realidad Aumentada con AR.js</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.js"></script>
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; }
+      .boton-enlace {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene embedded arjs="sourceType: webcam;">
+      <!-- Usando marcador personalizado -->
+      <a-marker type="pattern" url="mi-marcador.patt">
+        <a-image src="https://via.placeholder.com/300" position="0 0 0" rotation="-90 0 0" height="1.5" width="1.5"></a-image>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+  </body>
 </html>
