@@ -4,19 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruleta del Amor</title>
+
+    <!-- Ícono para la pestaña del navegador -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/210/210545.png" type="image/png">
+
     <style>
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            background: url("fondo.png") no-repeat center center fixed; /* aquí pones tu imagen descargada */
+            background: url("Fondo.png") no-repeat center center fixed; /* tu imagen descargada */
             background-size: cover;
             color: #fff;
+            overflow: hidden;
         }
 
         .header {
             padding: 20px;
             text-align: center;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+            z-index: 2;
+            position: relative;
         }
 
         .header h1 {
@@ -36,6 +43,7 @@
             align-items: center;
             position: relative;
             width: 100%;
+            z-index: 2;
         }
 
         canvas {
@@ -59,13 +67,28 @@
         .triangle {
             width: 0; 
             height: 0; 
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent; 
-            border-right: 25px solid hotpink; 
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent; 
+            border-right: 30px solid hotpink; 
+            border-left: 2px solid white; /* borde blanco */
             position: absolute;
             top: 50%;
-            right: -180%;
+            right: -200%;
             transform: translateY(-50%);
+        }
+
+        /* Corazones animados */
+        .heart {
+            position: fixed;
+            color: rgba(255, 105, 180, 0.8);
+            font-size: 20px;
+            animation: floatUp 6s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
@@ -83,18 +106,10 @@
     </div>
 
     <script>
-        function toRad(deg){
-            return deg * (Math.PI / 180.0);
-        }
-        function randomRange(min,max){
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        function easeOutSine(x) {
-            return Math.sin((x * Math.PI) / 2);
-        }
-        function getPercent(input,min,max){
-            return (((input - min) * 100) / (max - min))/100
-        }
+        function toRad(deg){ return deg * (Math.PI / 180.0); }
+        function randomRange(min,max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+        function easeOutSine(x){ return Math.sin((x * Math.PI) / 2); }
+        function getPercent(input,min,max){ return (((input - min) * 100) / (max - min))/100; }
     </script>
 
     <script>
@@ -125,7 +140,6 @@
         function createWheel(){
             step = 360/items.length;
             colors = [];
-            // alterna rosa y blanco
             for(let i = 0 ; i < items.length; i++){
                 if(i % 2 === 0){
                     colors.push({r:255,g:105,b:180}); // rosa
@@ -156,7 +170,6 @@
                 ctx.lineTo(centerX, centerY);
                 ctx.fill();
 
-                // texto
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(toRad((startDeg + endDeg)/2));
@@ -166,10 +179,7 @@
                 ctx.fillText(items[i], 120, 10);
                 ctx.restore();
 
-                itemDegs[items[i]] = {
-                    "startDeg": startDeg,
-                    "endDeg" : endDeg
-                }
+                itemDegs[items[i]] = { "startDeg": startDeg, "endDeg" : endDeg }
 
                 if(startDeg%360 < 360 && startDeg%360 > 270  && endDeg % 360 > 0 && endDeg%360 < 90 ){
                     document.getElementById("winner").innerHTML = items[i];
@@ -182,13 +192,10 @@
         let pause = false;
 
         function animate(){
-            if(pause){
-                return;
-            }
+            if(pause){ return; }
             speed = easeOutSine(getPercent(currentDeg ,maxRotation ,0)) * 20;
             if(speed < 0.01){
-                speed = 0;
-                pause = true;
+                speed = 0; pause = true;
             }
             currentDeg += speed;
             draw();
@@ -196,19 +203,29 @@
         }
         
         function spin(){
-            if(speed != 0){
-                return;
-            }
+            if(speed != 0){ return; }
             maxRotation = 0;
             currentDeg = 0;
             createWheel();
             draw();
-
             maxRotation = (360 * 6) - itemDegs[items[0]].endDeg + 10;
             itemDegs = {};
             pause = false;
             window.requestAnimationFrame(animate);
         }
+
+        // corazones animados
+        function createHeart(){
+            const heart = document.createElement("div");
+            heart.classList.add("heart");
+            heart.innerHTML = "❤️";
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.fontSize = (Math.random() * 20 + 15) + "px";
+            document.body.appendChild(heart);
+
+            setTimeout(()=>{ heart.remove(); }, 6000);
+        }
+        setInterval(createHeart, 1000);
     </script>
 </body>
 </html>
